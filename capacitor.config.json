@@ -1,0 +1,8 @@
+{
+  "appId": "com.malakai.sterling",
+  "appName": "Sterling",
+  "webDir": "www",
+  "backgroundColor": "#000000",
+  "ios": { "contentInset": "never", "backgroundColor": "#000000" },
+  "plugins": { "CapacitorHttp": { "enabled": true } }
+}
