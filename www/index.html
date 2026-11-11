@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Sterling">
+<meta name="theme-color" content="#000000">
+<title>Sterling</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#000;--fg:#fff;--g1:#0d0d0d;--g2:#1a1a1a;--g3:#2e2e2e;--g4:#6f6f6f;--g5:#a8a8a8}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{padding-top:env(safe-area-inset-top)}
+#app{max-width:520px;margin:0 auto;padding:14px 14px calc(92px + env(safe-area-inset-bottom))}
+h1,h2,h3{margin:0;letter-spacing:-.01em}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.14em;color:var(--g5);margin:22px 4px 10px;font-weight:600}
+p{margin:0 0 10px;line-height:1.5}
+ul{margin:0 0 10px;padding-left:20px;line-height:1.5}li{margin-bottom:4px}
+.card{background:var(--g1);border:1px solid var(--g3);border-radius:18px;padding:14px;margin-bottom:12px}
+.row{display:flex;align-items:center;gap:12px}
+.between{justify-content:space-between}
+.grow{flex:1;min-width:0}
+.muted{color:var(--g5);font-size:13px}
+.tiny{color:var(--g4);font-size:11px;line-height:1.4}
+.big{font-size:30px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mid{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.bar{height:8px;background:var(--g3);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar>i{display:block;height:100%;background:#fff;border-radius:99px;transition:width .5s}
+.bar.over>i{background:repeating-linear-gradient(135deg,#fff 0 6px,#555 6px 12px)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{border:1px solid var(--g3);border-radius:99px;padding:4px 10px;font-size:12px;font-weight:600}
+button,.btn{font:inherit;color:var(--bg);background:var(--fg);border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+button.ghost{background:transparent;color:var(--fg);border:1px solid var(--g4)}
+button.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+button:disabled{opacity:.35}
+button.full{width:100%}
+input[type=text],input[type=date],input[type=url],input[type=number],select,textarea{width:100%;background:#000;color:#fff;border:1px solid var(--g3);border-radius:12px;padding:12px;font:inherit;font-size:16px;color-scheme:dark}
+textarea{min-height:110px;font-size:12px;font-family:ui-monospace,Menlo,monospace}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.fld{margin-bottom:10px}.fld>.muted{margin-bottom:5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.stat .muted{font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+.stat .mid{margin-top:3px}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--g3);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav .in{display:flex;width:100%;max-width:520px}
+nav button{flex:1;min-width:0;background:transparent;color:var(--g4);border-radius:0;padding:10px 0 9px;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase}
+nav button.on{color:#fff}
+nav button svg{display:block;margin:0 auto 3px}
+#toast{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-120px);background:#fff;color:#000;font-weight:700;font-size:14px;padding:11px 16px;border-radius:14px;z-index:60;transition:transform .35s;max-width:92%;text-align:center}
+#toast.show{transform:translate(-50%,0)}
+.seg{display:flex;gap:6px;background:var(--g1);border:1px solid var(--g3);border-radius:14px;padding:4px;margin-bottom:12px}
+.seg button{flex:1;background:transparent;color:var(--g5);padding:9px 4px;font-size:13px;border-radius:10px}
+.seg button.on{background:#fff;color:#000}
+.scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
+.scroll button{background:transparent;color:var(--g5);border:1px solid var(--g3);padding:7px 12px;font-size:12px;border-radius:99px;white-space:nowrap}
+.scroll button.on{background:#fff;color:#000;border-color:#fff}
+label.sw{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
+label.sw input{width:22px;height:22px;accent-color:#fff}
+.tx{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--g2)}
+.tx:last-child{border-bottom:0}
+.tx .amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dh{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--g4);margin:12px 0 2px}
+.cat{padding:11px 0;border-bottom:1px solid var(--g2);cursor:pointer}
+.cat:last-child{border-bottom:0}
+.up{color:#fff;font-weight:700}.dn{color:var(--g5);font-weight:700}
+.tag{font-size:10px;font-weight:800;letter-spacing:.08em;border:1px solid var(--g4);color:var(--g5);border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+.tag.inv{background:#fff;color:#000;border-color:#fff}
+.banner{border:1px dashed var(--g4);border-radius:14px;padding:10px 12px;font-size:12px;color:var(--g5);margin-bottom:12px;line-height:1.45}
+.stk{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--g2);cursor:pointer}
+.stk:last-child{border-bottom:0}
+.sym{font-weight:800;font-size:16px;letter-spacing:.02em}
+.news{display:block;color:#fff;text-decoration:none;padding:12px 0;border-bottom:1px solid var(--g2)}
+.news:last-child{border-bottom:0}
+.news .h{font-weight:600;font-size:15px;line-height:1.35}
+.step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--g2)}
+.step:last-child{border-bottom:0}
+.step .n{width:28px;height:28px;border-radius:99px;border:2px solid var(--g4);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;color:var(--g5)}
+.step.done .n{background:#fff;border-color:#fff;color:#000}
+.step.now .n{border-color:#fff;color:#fff}
+.step.now{background:linear-gradient(90deg,#161616,transparent);margin:0 -14px;padding:12px 14px}
+.step.done .st{color:var(--g4)}
+.st{font-weight:700;font-size:15px}
+.acc{border-bottom:1px solid var(--g2)}
+.acc:last-child{border-bottom:0}
+.acc>.ah{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0;cursor:pointer;font-weight:600;font-size:15px}
+.acc>.ab{padding:0 0 8px;font-size:14px;color:#d8d8d8}
+.acc .pl{color:var(--g4);font-size:20px;font-weight:300;line-height:1}
+.ask{display:flex;flex-direction:column;gap:8px}
+.ask button{text-align:left;background:var(--g2);color:#fff;border:1px solid var(--g3);font-weight:600;font-size:14px;padding:12px 14px}
+.ask button.on{background:#fff;color:#000;border-color:#fff}
+.ans{border-left:3px solid #fff;padding-left:12px;margin-top:12px;font-size:14px;line-height:1.5}
+.quote{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:15px;line-height:1.45;color:#d8d8d8}
+#splash{position:fixed;inset:0;background:#000;z-index:50;display:flex;flex-direction:column;justify-content:center;padding:36px 30px;transition:opacity .7s;cursor:pointer}
+#splash.out{opacity:0;pointer-events:none}
+#splash .mk{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--g4);margin-bottom:28px}
+#splash .qt{font-family:Georgia,"Times New Roman",serif;font-size:27px;line-height:1.3;font-style:italic;max-width:520px}
+#splash .au{margin-top:22px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--g5);display:flex;align-items:center;gap:12px}
+#splash .au:before{content:"";width:30px;height:1px;background:var(--g4)}
+#splash .ln{position:absolute;left:30px;right:30px;bottom:calc(36px + env(safe-area-inset-bottom));height:1px;background:var(--g3)}
+#splash .ln i{display:block;height:1px;background:#fff;width:0;animation:ln 3.4s linear forwards}
+@keyframes ln{to{width:100%}}
+.hl{background:#fff;color:#000;border-radius:18px;padding:16px;margin-bottom:12px}
+.hl .muted{color:#444}
+</style>
+</head>
+<body>
+<div id="splash"></div>
+<div id="app"></div>
+<div id="toast"></div>
+<nav><div class="in" id="nav"></div></nav>
+<script>
+/* ============ helpers ============ */
+const KEY='sterling.v1';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const num=v=>{const n=parseFloat(String(v==null?'':v).replace(/[$,%\s]/g,''));return isFinite(n)?n:0};
+const group=(n,d)=>Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmt=(n,d)=>(n<0&&Math.round(Math.abs(n)*Math.pow(10,d==null?2:d))>0?'-':'')+'$'+group(n,d==null?2:d);
+const fmt0=n=>fmt(n,0);
+const sgn=(n,d)=>(n>0?'+':n<0?'−':'')+group(n,d==null?2:d);
+const pad=n=>String(n).padStart(2,'0');
+const dstr=dt=>dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate());
+const today=()=>dstr(new Date());
+const mkey=d=>d.slice(0,7);
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const mlabel=k=>MONTHS[+k.slice(5,7)-1]+' '+k.slice(0,4);
+const mshift=(k,n)=>{const d=new Date(+k.slice(0,4),+k.slice(5,7)-1+n,1);return d.getFullYear()+'-'+pad(d.getMonth()+1)};
+const daysIn=k=>new Date(+k.slice(0,4),+k.slice(5,7),0).getDate();
+const dlabel=d=>{const x=new Date(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8,10));return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][x.getDay()]+', '+MONTHS[x.getMonth()].slice(0,3)+' '+x.getDate()};
+const ago=ts=>{const s=Math.max(0,(Date.now()-ts)/1000);if(s<90)return 'just now';if(s<3600)return Math.round(s/60)+' min ago';if(s<86400)return Math.round(s/3600)+' h ago';return Math.round(s/86400)+' d ago'};
+const hash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+
+/* ============ quotes ============ */
+const QUOTES=[
+['Do not save what is left after spending; instead spend what is left after saving.','Warren Buffett'],
+['Beware of little expenses; a small leak will sink a great ship.','Benjamin Franklin'],
+['An investment in knowledge pays the best interest.','Benjamin Franklin'],
+['The stock market is a device for transferring money from the impatient to the patient.','Warren Buffett'],
+['Price is what you pay. Value is what you get.','Warren Buffett'],
+['Don’t look for the needle in the haystack. Just buy the haystack.','John Bogle'],
+['The four most dangerous words in investing are: this time it’s different.','Sir John Templeton'],
+['Someone is sitting in the shade today because someone planted a tree a long time ago.','Warren Buffett'],
+['Never depend on a single income. Make an investment to create a second source.','Warren Buffett'],
+['Risk comes from not knowing what you’re doing.','Warren Buffett'],
+['The best investment you can make is in yourself.','Warren Buffett'],
+['Be fearful when others are greedy, and greedy when others are fearful.','Warren Buffett'],
+['The first rule of compounding: never interrupt it unnecessarily.','Charlie Munger'],
+['Know what you own, and know why you own it.','Peter Lynch'],
+['You do not rise to the level of your goals. You fall to the level of your systems.','James Clear'],
+['Financial peace isn’t the acquisition of stuff. It’s learning to live on less than you make.','Dave Ramsey'],
+['The habit of saving is itself an education.','T. T. Munger'],
+['It’s not how much money you make, but how much money you keep.','Robert Kiyosaki'],
+['Time in the market beats timing the market.','Wall Street saying'],
+['Pay yourself first.','Old rule'],
+['Every dollar needs a job.','Budgeting rule'],
+['Spend less than you earn. Invest the difference. Repeat for decades.','Sterling'],
+['Compound interest rewards patience and punishes debt.','Sterling'],
+['A budget is not a cage. It is a plan for your money.','Sterling'],
+['Cash gives you options. Options give you freedom.','Sterling'],
+['Wealth is built in the boring middle.','Sterling'],
+['Small amounts, saved on purpose, beat big plans saved someday.','Sterling']
+];
+
+/* ============ state ============ */
+const CATS0=[
+ ['rent','Housing','need',25],['groc','Groceries','need',10],['trans','Transport','need',8],['bills','Bills & phone','need',7],
+ ['eat','Eating out','want',10],['fun','Fun','want',8],['shop','Shopping','want',7],['subs','Subscriptions','want',5],
+ ['goals','Goals & savings','save',10],['inv','Investing','save',10]
+];
+const GRP=[['need','Needs','50%'],['want','Wants','30%'],['save','Savings & investing','20%']];
+function fresh(){
+ return{set:{name:'',income:0,quotes:true,age:'',ess:0,debt:0,rate:0,guard:false,match:false},
+  tx:[],
+  cats:CATS0.map(c=>({id:c[0],name:c[1],grp:c[2],p:c[3],lim:0})),
+  goals:[{id:'ef',name:'Emergency fund',target:1000,saved:0}],
+  watch:['SPY','VOO','AAPL','MSFT','NVDA','TSLA'],hold:{},qd:{},news:{},lastQ:-1,
+  calc:{start:0,mo:100,r:7,fee:0.05,yrs:40}};
+}
+function load(){
+ const f=fresh();
+ try{const j=JSON.parse(localStorage.getItem(KEY));
+  if(j&&j.cats){j.set=Object.assign(f.set,j.set);j.calc=Object.assign(f.calc,j.calc);['tx','goals','watch'].forEach(k=>{if(!Array.isArray(j[k]))j[k]=f[k]});['hold','qd','news'].forEach(k=>{if(!j[k])j[k]={}});return j}}catch(e){}
+ return f;
+}
+let S=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+/* ============ toast + splash ============ */
+let toastT;
+function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),2600)}
+let splashT;
+function splash(force){
+ const el=$('#splash');
+ if(!S.set.quotes&&!force){el.style.display='none';return}
+ el.style.display='flex';el.classList.remove('out');
+ let i;do{i=Math.floor(Math.random()*QUOTES.length)}while(i===S.lastQ&&QUOTES.length>1);
+ S.lastQ=i;save();
+ const q=QUOTES[i];
+ el.innerHTML='<div class="mk">Sterling</div><div class="qt">“'+esc(q[0])+'”</div><div class="au">'+esc(q[1])+'</div><div class="ln"><i></i></div>';
+ const hide=()=>{clearTimeout(splashT);el.classList.add('out');setTimeout(()=>{el.style.display='none'},750)};
+ el.onclick=hide;splashT=setTimeout(hide,3500);
+}
+/* ============ budget + home ============ */
+let mo=mkey(today()),form={t:'s'},editCat=null,delArm=null,gadd=null,gedit=null;
+const catOf=id=>S.cats.find(c=>c.id===id);
+const txOf=m=>S.tx.filter(t=>mkey(t.d)===m);
+const stat=(l,v)=>'<div class="stat"><div class="muted">'+l+'</div><div class="mid">'+v+'</div></div>';
+function totals(m){
+ let inc=0,sp=0,sv=0;const by={};
+ txOf(m).forEach(t=>{
+  if(t.t==='i'){inc+=t.amt;return}
+  by[t.cat]=(by[t.cat]||0)+t.amt;
+  const c=catOf(t.cat);if(c&&c.grp==='save')sv+=t.amt;else sp+=t.amt;
+ });
+ const base=inc||S.set.income||0;
+ return{inc,sp,sv,by,base,left:base-sp-sv};
+}
+function applyPlan(inc){S.cats.forEach(c=>{if(c.p)c.lim=Math.round(inc*c.p/100)})}
+function insights(){
+ const m=mkey(today()),t=totals(m),base=t.base,out=[];
+ const dom=new Date().getDate(),dim=daysIn(m);
+ if(!txOf(m).length){out.push('Log your first transaction to unlock insights. Two weeks of honest tracking shows where the money actually goes.');return out}
+ if(base>0){
+  const proj=t.sp/dom*dim;
+  out.push('At this pace you will spend about '+fmt0(proj)+' this month'+(proj>base*.8?', which is '+Math.round(proj/base*100)+'% of your income. That leaves little to save.':', leaving room to save or invest.'));
+  const sr=t.sv/base;
+  out.push('Savings rate so far: '+Math.round(sr*100)+'%. A common target is 20% or more.'+(sr<.2?' Moving even 5% more into savings changes the long-run math.':''));
+ }
+ const over=S.cats.filter(c=>c.grp!=='save'&&c.lim>0&&(t.by[c.id]||0)>c.lim);
+ if(over.length)out.push('Over budget: '+over.map(c=>c.name+' ('+fmt0(t.by[c.id]-c.lim)+' over)').join(', ')+'.');
+ const w=S.cats.filter(c=>c.grp==='want').sort((a,b)=>(t.by[b.id]||0)-(t.by[a.id]||0))[0];
+ if(w&&(t.by[w.id]||0)>0)out.push('Biggest "want": '+w.name+' at '+fmt0(t.by[w.id])+'. Trimming 20% there is easier than trimming rent.');
+ return out.slice(0,4);
+}
+function greet(){const h=new Date().getHours();return h<12?'Good morning':h<18?'Good afternoon':'Good evening'}
+
+function goalRow(g){
+ const p=g.target>0?Math.min(100,g.saved/g.target*100):0;
+ let h='<div style="padding:10px 0;border-bottom:1px solid var(--g2)"><div class="row between"><div class="grow"><b>'+esc(g.name)+'</b><div class="muted">'+fmt0(g.saved)+' of '+fmt0(g.target)+' · '+Math.round(p)+'%</div></div><button class="ghost sm" data-a="gadd" data-v="'+g.id+'">+ Add</button><button class="ghost sm" data-a="gedit" data-v="'+g.id+'">Edit</button></div><div class="bar"><i style="width:'+p+'%"></i></div>';
+ if(gadd===g.id)h+='<div class="row" style="margin-top:8px"><input type="number" inputmode="decimal" id="ga" placeholder="Amount to add"><button data-a="gput" data-v="'+g.id+'">Add</button></div>';
+ if(gedit===g.id)h+='<div class="grid2" style="margin-top:8px"><input type="text" id="gn" maxlength="28" value="'+esc(g.name)+'"><input type="number" inputmode="decimal" id="gt" value="'+g.target+'"></div><div class="row" style="margin-top:8px"><button class="sm" data-a="gsave" data-v="'+g.id+'">Save</button>'+(g.id==='ef'?'':'<button class="ghost sm" data-a="gdel" data-v="'+g.id+'">'+(delArm===g.id?'Tap again to delete':'Delete')+'</button>')+'</div>';
+ return h+'</div>';
+}
+
+function vHome(){
+ const m=mkey(today()),t=totals(m);
+ const dom=new Date().getDate(),dim=daysIn(m),rem=dim-dom+1;
+ let h='<div class="row between" style="margin:4px 4px 12px"><div><div class="muted">'+greet()+'</div><h1 style="font-size:26px">'+esc(S.set.name||'Your money')+'</h1></div><button class="ghost sm" data-a="q">Quote</button></div>';
+ if(t.base>0){
+  h+='<div class="hl"><div class="muted">Left this month</div><div class="big">'+fmt(t.left,0)+'</div><div class="muted" style="margin-top:4px">'+(t.left>0?'About '+fmt(t.left/rem,0)+' a day for the next '+rem+' day'+(rem===1?'':'s'):'Over plan. Pause wants until next month.')+'</div></div>';
+ }else{
+  h+='<div class="hl"><div class="muted">Welcome</div><div class="mid" style="margin:4px 0 6px">Start by adding your monthly take-home pay</div><div class="muted">Open Budget, set your pay, and every category fills in with a 50/30/20 plan.</div></div>';
+ }
+ h+='<div class="card"><div class="grid2">'+stat('Income',fmt0(t.inc))+stat('Spent',fmt0(t.sp))+stat('Saved',fmt0(t.sv))+stat('Savings rate',t.base>0?Math.round(t.sv/t.base*100)+'%':'—')+'</div></div>';
+ h+='<div class="row" style="margin-bottom:12px"><button class="grow" data-a="quick" data-v="s">+ Spend</button><button class="grow ghost" data-a="quick" data-v="i">+ Income</button></div>';
+ h+='<h2>Insights</h2><div class="card">'+insights().map(s=>'<p style="margin-bottom:8px">'+esc(s)+'</p>').join('')+'</div>';
+ h+='<h2>Goals</h2><div class="card">'+S.goals.map(goalRow).join('')
+  +'<div class="row" style="margin-top:12px"><input type="text" id="gnn" maxlength="28" placeholder="New goal (e.g. Laptop)"><input type="number" inputmode="decimal" id="gnt" placeholder="Target" style="max-width:110px"><button data-a="gnew">Add</button></div></div>';
+ h+='<h2>Markets</h2><div class="card" data-a="tab" data-v="mkt" style="cursor:pointer">'+S.watch.slice(0,4).map(sym=>stockRow(sym,true)).join('')+'<div class="tiny" style="margin-top:8px">Tap for the full watchlist and news ›</div></div>';
+ return h;
+}
+
+function catRow(c,t){
+ const spent=t.by[c.id]||0,save=c.grp==='save';
+ const p=c.lim>0?Math.min(100,spent/c.lim*100):(spent>0?100:0),over=!save&&c.lim>0&&spent>c.lim;
+ let h='<div class="cat"><div data-a="catedit" data-v="'+c.id+'"><div class="row between"><b>'+esc(c.name)+'</b><span class="muted">'+fmt0(spent)+' / '+fmt0(c.lim)+'</span></div><div class="bar'+(over?' over':'')+'"><i style="width:'+p+'%"></i></div><div class="tiny">'+(c.lim>0?(over?fmt0(spent-c.lim)+' over':fmt0(Math.max(0,c.lim-spent))+(save?' to go':' left')):'No limit set — tap to edit')+'</div></div>';
+ if(editCat===c.id)h+='<div class="grid2" style="margin-top:8px"><input type="text" id="cen" maxlength="24" value="'+esc(c.name)+'"><input type="number" inputmode="decimal" id="cel" value="'+c.lim+'"></div><div class="row" style="margin-top:8px"><button class="sm" data-a="catsave" data-v="'+c.id+'">Save</button><button class="ghost sm" data-a="catdel" data-v="'+c.id+'">'+(delArm===c.id?'Tap again to delete':'Delete')+'</button></div>';
+ return h+'</div>';
+}
+function vBudget(){
+ const t=totals(mo),isNow=mo===mkey(today());
+ let h='<div class="row between" style="margin:2px 4px 12px"><button class="ghost sm" data-a="mo" data-v="-1">‹</button><h1 style="font-size:20px">'+mlabel(mo)+'</h1><button class="ghost sm" data-a="mo" data-v="1">›</button></div>';
+ h+='<div class="card"><div class="grid2">'+stat('Income',fmt0(t.inc))+stat('Spent',fmt0(t.sp))+stat('Saved',fmt0(t.sv))+stat('Left',fmt0(t.left))+'</div></div>';
+ h+='<div class="card"><div class="seg" style="margin-bottom:10px"><button class="'+(form.t==='s'?'on':'')+'" data-a="ttype" data-v="s">Spend</button><button class="'+(form.t==='i'?'on':'')+'" data-a="ttype" data-v="i">Income</button></div>'
+  +'<div class="grid2"><div class="fld"><div class="muted">Amount</div><input type="number" inputmode="decimal" id="ta" placeholder="0.00"></div><div class="fld"><div class="muted">Date</div><input type="date" id="td" value="'+(isNow?today():mo+'-01')+'"></div></div>';
+ if(form.t==='s'){
+  h+='<div class="fld"><div class="muted">Category</div><select id="tc">'+GRP.map(g=>'<optgroup label="'+g[1]+'">'+S.cats.filter(c=>c.grp===g[0]).map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('')+'</optgroup>').join('')+'</select></div>';
+ }
+ h+='<div class="fld"><div class="muted">'+(form.t==='s'?'Note (optional)':'Source (e.g. Panera, SES, drill pay)')+'</div><input type="text" id="tn" maxlength="40"></div><button class="full" data-a="txadd">'+(form.t==='s'?'Add spending':'Add income')+'</button></div>';
+ if(!S.set.income){
+  h+='<div class="card"><div class="muted" style="margin-bottom:6px">Monthly take-home pay (after tax)</div><div class="row"><input type="number" inputmode="decimal" id="ti" placeholder="e.g. 1800"><button data-a="incset">Set</button></div><div class="tiny" style="margin-top:6px">Fills your limits using the 50/30/20 rule. You can edit every limit.</div></div>';
+ }
+ GRP.forEach(g=>{
+  const cs=S.cats.filter(c=>c.grp===g[0]);
+  h+='<h2>'+g[1]+' · '+g[2]+'</h2><div class="card">'+cs.map(c=>catRow(c,t)).join('')
+   +'<div class="row" style="margin-top:10px"><input type="text" id="cn-'+g[0]+'" maxlength="24" placeholder="Add a category"><button class="ghost sm" data-a="catadd" data-v="'+g[0]+'">Add</button></div></div>';
+ });
+ if(S.set.income)h+='<button class="ghost full" data-a="plan" style="margin-bottom:12px">Reset limits to 50/30/20 of '+fmt0(S.set.income)+'</button>';
+ h+='<h2>Transactions</h2><div class="card">';
+ const list=txOf(mo).map((x,i)=>({x,i})).sort((a,b)=>a.x.d<b.x.d?1:a.x.d>b.x.d?-1:b.i-a.i).map(o=>o.x);
+ if(!list.length)h+='<div class="muted">Nothing logged this month.</div>';
+ let last='';
+ list.forEach(x=>{
+  if(x.d!==last){h+='<div class="dh">'+dlabel(x.d)+'</div>';last=x.d}
+  const c=catOf(x.cat);
+  h+='<div class="tx"><div class="grow"><div style="font-weight:600">'+esc(x.note||(x.t==='i'?'Income':c?c.name:'Uncategorized'))+'</div><div class="tiny">'+(x.t==='i'?'Income':c?esc(c.name):'Uncategorized')+'</div></div><div class="amt">'+(x.t==='i'?'+':'')+fmt(x.amt)+'</div><button class="ghost sm" data-a="txdel" data-v="'+x.id+'">'+(delArm===x.id?'Sure?':'✕')+'</button></div>';
+ });
+ return h+'</div>';
+}
+
+function armed(id,fn){
+ if(delArm!==id){delArm=id;render();setTimeout(()=>{if(delArm===id){delArm=null;render()}},3500);return}
+ delArm=null;fn();
+}
+function budgetClick(a,v,b){
+ switch(a){
+  case 'mo':mo=mshift(mo,+v);render();return true;
+  case 'ttype':form.t=v;render();return true;
+  case 'quick':form.t=v;tab='bud';window.scrollTo(0,0);render();return true;
+  case 'txadd':{
+   const amt=num($('#ta').value);if(!(amt>0)){toast('Enter an amount');return true}
+   const d=$('#td').value||today();
+   const x={id:uid(),t:form.t,amt:Math.round(amt*100)/100,cat:form.t==='s'?$('#tc').value:'',note:$('#tn').value.trim(),d};
+   S.tx.push(x);if(mkey(d)!==mo)mo=mkey(d);save();render();toast(form.t==='s'?'Spending added':'Income added');return true}
+  case 'txdel':armed(v,()=>{const x=S.tx.find(t=>t.id===v);if(x&&x.goal){const g=S.goals.find(g=>g.id===x.goal);if(g)g.saved=Math.max(0,g.saved-x.amt)}S.tx=S.tx.filter(t=>t.id!==v);save();render()});return true;
+  case 'incset':{const n=num($('#ti').value);if(!(n>0)){toast('Enter your monthly pay');return true}S.set.income=n;applyPlan(n);save();render();toast('Plan set from '+fmt0(n));return true}
+  case 'plan':if(S.set.income){applyPlan(S.set.income);save();render();toast('Limits reset to 50/30/20')}return true;
+  case 'catedit':editCat=editCat===v?null:v;render();return true;
+  case 'catsave':{const c=catOf(v);if(c){c.name=$('#cen').value.trim()||c.name;c.lim=Math.max(0,Math.round(num($('#cel').value)));c.p=0;editCat=null;save();render()}return true}
+  case 'catdel':armed(v,()=>{S.cats=S.cats.filter(c=>c.id!==v);editCat=null;save();render()});return true;
+  case 'catadd':{const n=$('#cn-'+v).value.trim();if(!n)return true;S.cats.push({id:uid(),name:n,grp:v,p:0,lim:0});save();render();return true}
+  case 'gadd':gadd=gadd===v?null:v;gedit=null;render();return true;
+  case 'gedit':gedit=gedit===v?null:v;gadd=null;render();return true;
+  case 'gput':{const g=S.goals.find(g=>g.id===v),n=num($('#ga').value);if(!g||!(n>0)){toast('Enter an amount');return true}
+   g.saved=Math.round((g.saved+n)*100)/100;S.tx.push({id:uid(),t:'s',amt:n,cat:'goals',note:'→ '+g.name,d:today(),goal:g.id});gadd=null;save();render();toast(fmt0(n)+' added to '+g.name);return true}
+  case 'gsave':{const g=S.goals.find(g=>g.id===v);if(g){g.name=$('#gn').value.trim()||g.name;g.target=Math.max(1,num($('#gt').value)||g.target);gedit=null;save();render()}return true}
+  case 'gdel':armed(v,()=>{S.goals=S.goals.filter(g=>g.id!==v);gedit=null;save();render()});return true;
+  case 'gnew':{const n=$('#gnn').value.trim(),t=num($('#gnt').value);if(!n||!(t>0)){toast('Name and target needed');return true}S.goals.push({id:uid(),name:n,target:t,saved:0});save();render();return true}
+  case 'q':splash(true);return true;
+ }
+ return false;
+}
+/* ============ markets + news ============ */
+let mtab='watch',nk='top',sel=null,rng='1mo',live=null,refreshing=false;
+const RNG={'1mo':['1M',22],'6mo':['6M',126],'1y':['1Y',252]};
+const newsBusy={},newsFail={},rngBusy={};
+function safeRender(){const ae=document.activeElement;if(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))return;render()}
+
+async function jget(url,text){
+ const ctl=typeof AbortController!=='undefined'?new AbortController():null;
+ const to=setTimeout(()=>{if(ctl)ctl.abort()},9000);
+ try{const r=await fetch(url,ctl?{signal:ctl.signal}:{});if(!r.ok)throw new Error('HTTP '+r.status);return text?await r.text():await r.json()}
+ finally{clearTimeout(to)}
+}
+async function yahoo(sym,range){
+ const j=await jget('https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?range='+range+'&interval=1d');
+ const r=j.chart&&j.chart.result&&j.chart.result[0];if(!r)throw new Error('no data');
+ const cl=((r.indicators.quote[0]||{}).close||[]).filter(x=>x!=null);
+ const p=r.meta.regularMarketPrice!=null?r.meta.regularMarketPrice:cl[cl.length-1];
+ if(!cl.length||p==null)throw new Error('empty');
+ const prev=cl.length>1?cl[cl.length-2]:(r.meta.chartPreviousClose||p);
+ return{p,prev,name:r.meta.shortName||r.meta.longName||sym,c:cl};
+}
+async function stooq(sym,range){
+ const t=await jget('https://stooq.com/q/d/l/?s='+encodeURIComponent(sym.toLowerCase())+'.us&i=d',true);
+ const rows=t.trim().split('\n').slice(1).map(l=>l.split(',')).filter(r=>r.length>=5&&isFinite(+r[4]));
+ if(rows.length<2)throw new Error('no data');
+ const cl=rows.slice(-(RNG[range][1]+1)).map(r=>+r[4]);
+ return{p:cl[cl.length-1],prev:cl[cl.length-2],name:sym,c:cl};
+}
+async function series(sym,range){try{return await yahoo(sym,range)}catch(e){return await stooq(sym,range)}}
+function store(sym,range,d){
+ const q=S.qd[sym]||(S.qd[sym]={c:{}});
+ q.p=d.p;q.prev=d.prev;q.name=(d.name&&d.name!==sym)?d.name:(q.name||sym);q.ts=Date.now();q.c[range]=d.c;
+}
+async function refreshAll(){
+ if(refreshing)return;refreshing=true;let ok=0;
+ await Promise.all(S.watch.map(async s=>{try{store(s,'1mo',await series(s,'1mo'));ok++}catch(e){}}));
+ refreshing=false;live=ok>0;if(ok)save();safeRender();
+}
+async function ensureRange(sym,range){
+ const q=S.qd[sym],k=sym+range;
+ if(!q||q.c[range]||rngBusy[k]||live===false)return;
+ rngBusy[k]=1;try{store(sym,range,await series(sym,range));save()}catch(e){}rngBusy[k]=0;safeRender();
+}
+
+/* demo data (only shown when live data is unreachable, e.g. in the browser preview) */
+const demoC={};
+function demo(sym,n){
+ const k=sym+n;if(demoC[k])return demoC[k];
+ let h=hash(sym)||1;const r=()=>{h^=h<<13;h>>>=0;h^=h>>>17;h^=h<<5;h>>>=0;return h/4294967296};
+ let p=30+(hash(sym)%47)*9;const vol=.012+(hash(sym+'v')%10)/1000;const c=[];
+ for(let i=0;i<n;i++){p*=1+(r()-.47)*vol*2;c.push(Math.round(p*100)/100)}
+ return demoC[k]={p:c[n-1],prev:c[n-2],name:sym,c,demo:true};
+}
+function qv(sym,range){
+ range=range||'1mo';const q=S.qd[sym];
+ if(q&&q.p!=null){return{p:q.p,prev:q.prev,name:q.name||sym,c:q.c[range]||null,ts:q.ts,demo:false}}
+ if(live===false)return Object.assign({ts:0},demo(sym,RNG[range][1]));
+ return{loading:true};
+}
+
+/* charts: gains are solid white, losses are dashed grey */
+function spark(a,w,h,up){
+ if(!a||a.length<2)return '<svg width="'+w+'" height="'+h+'"></svg>';
+ const mn=Math.min.apply(null,a),mx=Math.max.apply(null,a),rg=(mx-mn)||1;
+ const pts=a.map((v,i)=>(i/(a.length-1)*(w-2)+1).toFixed(1)+','+(h-2-(v-mn)/rg*(h-4)).toFixed(1)).join(' ');
+ return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline points="'+pts+'" fill="none" stroke="'+(up?'#fff':'#a8a8a8')+'" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"'+(up?'':' stroke-dasharray="3 3"')+'/></svg>';
+}
+function chart(a,up){
+ const w=400,h=170,pl=6,pr=6,pt=10,pb=10;
+ if(!a||a.length<2)return '<div class="muted" style="padding:50px 0;text-align:center">Loading chart…</div>';
+ const mn=Math.min.apply(null,a),mx=Math.max.apply(null,a),rg=(mx-mn)||1;
+ const X=i=>pl+i/(a.length-1)*(w-pl-pr),Y=v=>pt+(1-(v-mn)/rg)*(h-pt-pb);
+ const pts=a.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+ const area=pts+' '+X(a.length-1).toFixed(1)+','+(h-pb)+' '+X(0).toFixed(1)+','+(h-pb);
+ let g='';[0,1,2,3].forEach(i=>{const y=pt+i*(h-pt-pb)/3;g+='<line x1="'+pl+'" x2="'+(w-pr)+'" y1="'+y+'" y2="'+y+'" stroke="#222"/>'});
+ return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="display:block">'+g+'<polygon points="'+area+'" fill="#fff" opacity=".07"/><polyline points="'+pts+'" fill="none" stroke="'+(up?'#fff':'#a8a8a8')+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"'+(up?'':' stroke-dasharray="5 4"')+'/><circle cx="'+X(a.length-1).toFixed(1)+'" cy="'+Y(a[a.length-1]).toFixed(1)+'" r="3.5" fill="'+(up?'#fff':'#a8a8a8')+'"/></svg>'
+  +'<div class="row between tiny" style="margin-top:4px"><span>Low '+fmt(mn)+'</span><span>High '+fmt(mx)+'</span></div>';
+}
+
+function stockRow(sym,compact){
+ const d=qv(sym);
+ if(d.loading)return '<div class="stk"'+(compact?'':' data-a="mopen" data-v="'+sym+'"')+'><div class="grow"><div class="sym">'+esc(sym)+'</div></div><div class="muted">Loading…</div></div>';
+ const ch=d.p-d.prev,pc=d.prev?ch/d.prev*100:0,up=ch>=0;
+ return '<div class="stk"'+(compact?'':' data-a="mopen" data-v="'+sym+'"')+'><div class="grow"><div class="sym">'+esc(sym)+(d.demo?'<span class="tag">DEMO</span>':'')+'</div><div class="tiny" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(d.name)+'</div></div>'+spark(d.c,70,28,up)+'<div style="text-align:right;min-width:80px"><div class="mid" style="font-size:16px">'+fmt(d.p)+'</div><div class="'+(up?'up':'dn')+'" style="font-size:12px">'+(up?'▲':'▼')+' '+group(Math.abs(pc),2)+'%</div></div></div>';
+}
+
+/* news via Google News RSS (no key). Works in the app; blocked in the browser preview. */
+function parseRSS(xml){
+ const d=new DOMParser().parseFromString(xml,'text/xml');
+ return Array.prototype.slice.call(d.querySelectorAll('item'),0,25).map(it=>{
+  const g=t=>{const e=it.querySelector(t);return e?e.textContent:''};
+  let title=g('title'),src=g('source');
+  if(src&&title.endsWith(' - '+src))title=title.slice(0,-(src.length+3));
+  else if(!src){const i=title.lastIndexOf(' - ');if(i>0){src=title.slice(i+3);title=title.slice(0,i)}}
+  return{t:title,u:g('link'),s:src,ts:Date.parse(g('pubDate'))||0};
+ });
+}
+function newsUrl(key){
+ if(key==='top')return 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-US&gl=US&ceid=US:en';
+ const q=key==='mine'?S.watch.slice(0,6).join(' OR ')+' stock':key+' stock';
+ return 'https://news.google.com/rss/search?q='+encodeURIComponent(q)+'&hl=en-US&gl=US&ceid=US:en';
+}
+async function loadNews(key,force){
+ const c=S.news[key];if(!force&&c&&Date.now()-c.ts<9e5)return;
+ if(newsBusy[key])return;newsBusy[key]=1;
+ try{const items=parseRSS(await jget(newsUrl(key),true));S.news[key]={ts:Date.now(),items};save();delete newsFail[key]}catch(e){newsFail[key]=Date.now()}
+ newsBusy[key]=0;safeRender();
+}
+function needNews(key){
+ const c=S.news[key];
+ if((!c||Date.now()-c.ts>9e5)&&!(newsFail[key]&&Date.now()-newsFail[key]<6e4))loadNews(key);
+}
+function sampleNews(key){
+ const s=key==='top'||key==='mine'?'the market':key;
+ return ['What to watch in '+s+' this week','How interest rates could shape the outlook for '+s,'Earnings season: what investors are looking for','Index funds vs. picking stocks: a refresher'].map(t=>({t:'Sample headline: '+t,u:'',s:'Sample',ts:0}));
+}
+function newsList(key,max){
+ let items,sample=false;const c=S.news[key];
+ if(c)items=c.items;else if(newsFail[key]){items=sampleNews(key);sample=true}else return '<div class="muted" style="padding:14px 0">Loading headlines…</div>';
+ if(!items.length)return '<div class="muted" style="padding:14px 0">No headlines found.</div>';
+ let h=sample?'<div class="banner">Sample headlines. Live news loads inside the iPhone app.</div>':'';
+ items.slice(0,max||12).forEach(n=>{
+  const ok=/^https?:\/\//.test(n.u);
+  h+=(ok?'<a class="news" href="'+esc(n.u)+'" target="_blank" rel="noopener">':'<div class="news">')+'<div class="h">'+esc(n.t)+'</div><div class="tiny" style="margin-top:4px">'+esc(n.s||'')+(n.ts?' · '+ago(n.ts):'')+'</div>'+(ok?'</a>':'</div>');
+ });
+ return h;
+}
+
+function portfolio(){
+ let val=0,cost=0,n=0;
+ Object.keys(S.hold).forEach(s=>{const h=S.hold[s];if(!(h.sh>0))return;const d=qv(s);if(d.loading)return;val+=h.sh*d.p;cost+=h.sh*(h.cost||0);n++});
+ return{val,cost,n};
+}
+function vMkt(){
+ if(sel)return vStock();
+ let h='<div class="seg"><button class="'+(mtab==='watch'?'on':'')+'" data-a="mseg" data-v="watch">Watchlist</button><button class="'+(mtab==='news'?'on':'')+'" data-a="mseg" data-v="news">News</button></div>';
+ if(live===false)h+='<div class="banner"><b>Demo data.</b> Live prices and headlines load inside the iPhone app. What you see in this preview is generated for layout only and is not real market data.</div>';
+ if(mtab==='watch'){
+  const pf=portfolio();
+  if(pf.n){const g=pf.val-pf.cost;h+='<div class="hl"><div class="muted">Your holdings</div><div class="big">'+fmt(pf.val)+'</div><div class="muted" style="margin-top:4px">'+(pf.cost>0?(g>=0?'▲ ':'▼ ')+fmt(Math.abs(g))+' ('+sgn(g/pf.cost*100,1)+'%) vs. what you paid':'Add what you paid to see gain or loss')+'</div></div>'}
+  h+='<div class="card">'+S.watch.map(s=>stockRow(s)).join('')+(S.watch.length?'':'<div class="muted">Add a ticker below.</div>')+'</div>';
+  h+='<div class="row" style="margin-bottom:8px"><input type="text" id="ms" maxlength="10" placeholder="Add ticker (e.g. AMZN)" autocapitalize="characters" autocomplete="off"><button data-a="msadd">Add</button></div>';
+  h+='<div class="row between"><div class="tiny">'+(live===null||refreshing?'Updating…':live?'Quotes can be delayed. Not investment advice.':'Offline')+'</div><button class="ghost sm" data-a="mrefresh">Refresh</button></div>';
+ }else{
+  h+='<div class="scroll">'+[['top','Top business'],['mine','My stocks']].concat(S.watch.map(s=>[s,s])).map(k=>'<button class="'+(nk===k[0]?'on':'')+'" data-a="nk" data-v="'+esc(k[0])+'">'+esc(k[1])+'</button>').join('')+'</div>';
+  needNews(nk);
+  h+='<div class="card">'+newsList(nk,15)+'</div><div class="tiny">Headlines come from Google News and open in your browser. Always read the source before acting on a headline.</div>';
+ }
+ return h;
+}
+
+function vStock(){
+ const s=sel,d=qv(s,rng),hold=S.hold[s]||{};
+ let h='<div class="row between" style="margin:2px 0 12px"><button class="ghost sm" data-a="mback">‹ Back</button><button class="ghost sm" data-a="mrm" data-v="'+esc(s)+'">'+(delArm==='rm'+s?'Tap again to remove':'Remove')+'</button></div>';
+ if(d.loading)return h+'<div class="card muted">Loading '+esc(s)+'…</div>';
+ ensureRange(s,rng);needNews(s);
+ const ch=d.p-d.prev,pc=d.prev?ch/d.prev*100:0,up=ch>=0;
+ h+='<div class="card"><div class="muted">'+esc(d.name)+(d.demo?' <span class="tag">DEMO</span>':'')+'</div><div class="row between" style="align-items:flex-end"><div><div class="sym" style="font-size:22px">'+esc(s)+'</div><div class="big">'+fmt(d.p)+'</div></div><div class="'+(up?'up':'dn')+'" style="text-align:right">'+(up?'▲':'▼')+' '+sgn(ch)+'<br>'+sgn(pc)+'% today</div></div></div>';
+ const series_=d.c;let per='';
+ if(series_&&series_.length>1){const f=series_[0],l=series_[series_.length-1];per='<div class="muted" style="margin-bottom:6px">'+RNG[rng][0]+' change: <span class="'+(l>=f?'up':'dn')+'">'+sgn((l-f)/f*100)+'%</span></div>'}
+ h+='<div class="card"><div class="seg" style="margin-bottom:10px">'+Object.keys(RNG).map(k=>'<button class="'+(rng===k?'on':'')+'" data-a="rng" data-v="'+k+'">'+RNG[k][0]+'</button>').join('')+'</div>'+per+chart(series_,up)+'</div>';
+ h+='<h2>Your position</h2><div class="card"><div class="grid2"><div class="fld"><div class="muted">Shares</div><input type="number" inputmode="decimal" id="hs" value="'+(hold.sh||'')+'" placeholder="0"></div><div class="fld"><div class="muted">Avg. price paid</div><input type="number" inputmode="decimal" id="hc" value="'+(hold.cost||'')+'" placeholder="0.00"></div></div><button class="ghost full" data-a="hsave" data-v="'+esc(s)+'">Save position</button>';
+ if(hold.sh>0){const val=hold.sh*d.p,g=val-hold.sh*(hold.cost||0);h+='<div class="row between" style="margin-top:12px"><div><div class="muted">Value</div><div class="mid">'+fmt(val)+'</div></div>'+(hold.cost>0?'<div style="text-align:right"><div class="muted">Gain / loss</div><div class="mid '+(g>=0?'up':'dn')+'">'+(g>=0?'+':'−')+fmt(Math.abs(g))+'</div></div>':'')+'</div>'}
+ h+='<div class="tiny" style="margin-top:8px">Stored on this device only. For tracking, not a brokerage connection.</div></div>';
+ h+='<h2>News</h2><div class="card">'+newsList(s,8)+'</div>';
+ return h;
+}
+
+function marketClick(a,v,b){
+ switch(a){
+  case 'mseg':mtab=v;render();return true;
+  case 'nk':nk=v;render();return true;
+  case 'mopen':sel=v;rng='1mo';window.scrollTo(0,0);render();return true;
+  case 'mback':sel=null;render();return true;
+  case 'rng':rng=v;render();return true;
+  case 'mrefresh':live=live===false?null:live;refreshAll();Object.keys(S.news).forEach(k=>delete newsFail[k]);if(mtab==='news')loadNews(nk,true);render();return true;
+  case 'mrm':armed('rm'+v,()=>{S.watch=S.watch.filter(x=>x!==v);delete S.hold[v];sel=null;save();render()});return true;
+  case 'hsave':{const sh=num($('#hs').value),c=num($('#hc').value);if(sh>0)S.hold[v]={sh,cost:c};else delete S.hold[v];save();render();toast('Position saved');return true}
+  case 'msadd':{
+   const sym=$('#ms').value.toUpperCase().replace(/[^A-Z0-9.\-^=]/g,'').slice(0,10);
+   if(!sym)return true;if(S.watch.indexOf(sym)>=0){toast(sym+' is already on your list');return true}
+   if(live===false){S.watch.push(sym);save();render();return true}
+   toast('Checking '+sym+'…');
+   series(sym,'1mo').then(d=>{store(sym,'1mo',d);S.watch.push(sym);save();safeRender()}).catch(()=>toast('No data found for '+sym));
+   return true}
+ }
+ return false;
+}
+/* ============ advisor ============ */
+let askId=null;
+const IRA_LIMIT=7500; /* 2026 IRA contribution limit; verify at irs.gov each year */
+function essentials(){
+ if(S.set.ess>0)return S.set.ess;
+ const needs=S.cats.filter(c=>c.grp==='need');
+ const lim=needs.reduce((a,c)=>a+c.lim,0);if(lim>0)return lim;
+ const t=totals(mkey(today()));return needs.reduce((a,c)=>a+(t.by[c.id]||0),0);
+}
+function iraYtd(){const y=String(new Date().getFullYear());return S.tx.filter(t=>t.t==='s'&&t.cat==='inv'&&t.d.slice(0,4)===y).reduce((a,t)=>a+t.amt,0)}
+function steps(){
+ const ef=S.goals.find(g=>g.id==='ef')||{saved:0},ess=essentials(),ira=iraYtd(),hd=S.set.debt>0&&S.set.rate>=8;
+ const L=[
+  {t:'Starter emergency fund',s:'First $1,000 in a separate savings account. This stops one bad week from becoming credit card debt.',done:ef.saved>=1000,pr:ef.saved/1000,n:fmt0(ef.saved)+' of $1,000'},
+  {t:'Get your full employer match',s:'A match is an instant 50–100% return. If you have a 401(k) or a TSP match, contribute enough to get all of it. Check the box in "Your numbers" when this is handled or does not apply.',done:S.set.match,man:true},
+  {t:'Pay off high-interest debt',s:'Debt above about 8% APR costs more than the market is likely to pay you. Clear it before investing beyond the match.',done:!hd,n:hd?fmt0(S.set.debt)+' at '+S.set.rate+'% APR':'No high-interest debt'},
+  {t:'Open and fund a Roth IRA',s:'Tax-free growth, and you can pull your contributions back out if you must. You need earned income. Opening the account is not investing: buy a broad index fund or target-date fund inside it.',done:ira>=IRA_LIMIT,pr:ira/IRA_LIMIT,n:fmt0(ira)+' of '+fmt0(IRA_LIMIT)+' this year (tracked from your Investing category)'},
+  {t:'Build a full emergency fund',s:'3 months of essentials if your income is steady, 6 if it is not. Keep it in a high-yield savings account.',done:ess>0&&ef.saved>=ess*3,pr:ess>0?ef.saved/(ess*3):0,n:ess>0?fmt0(ef.saved)+' of '+fmt0(ess*3)+' (3 months of essentials)':'Set your essentials in "Your numbers"'},
+  {t:'Max tax-advantaged accounts',s:'401(k), TSP and HSA if eligible. Contribution limits are higher than the IRA, and you can use Roth or traditional depending on your tax bracket.',later:true},
+  {t:'Taxable brokerage and big goals',s:'Extra investing beyond retirement accounts, and goals like a car, a house down payment or travel. No special tax shelter, but no restrictions either.',later:true}
+ ];
+ let now=-1;L.forEach((x,i)=>{if(now<0&&!x.done)now=i});L.now=now;return L;
+}
+
+function fv(start,mo,r,yrs){let b=start;const m=r/1200;for(let i=0;i<Math.round(yrs*12);i++)b=b*(1+m)+mo;return b}
+function dual(bal,con){
+ const w=400,h=150,pl=6,pr=6,pt=8,pb=8;
+ const mx=Math.max.apply(null,bal.concat(con))||1;
+ const X=i=>pl+i/(bal.length-1)*(w-pl-pr),Y=v=>pt+(1-v/mx)*(h-pt-pb);
+ const line=a=>a.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+ return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" style="display:block"><line x1="'+pl+'" x2="'+(w-pr)+'" y1="'+(h-pb)+'" y2="'+(h-pb)+'" stroke="#333"/><polygon points="'+line(bal)+' '+X(bal.length-1)+','+(h-pb)+' '+X(0)+','+(h-pb)+'" fill="#fff" opacity=".08"/><polyline points="'+line(con)+'" fill="none" stroke="#a8a8a8" stroke-width="2" stroke-dasharray="5 4"/><polyline points="'+line(bal)+'" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>'
+  +'<div class="row tiny" style="gap:16px;margin-top:4px"><span>── Balance</span><span>- - - You put in</span></div>';
+}
+function calcHTML(){
+ const c=S.calc,r=c.r-c.fee,yrs=Math.max(1,Math.min(60,Math.round(c.yrs)||1));
+ const bal=[],con=[];for(let y=0;y<=yrs;y++){bal.push(fv(c.start,c.mo,r,y));con.push(c.start+c.mo*12*y)}
+ const end=bal[yrs],put=con[yrs];
+ let h='<div class="row between" style="align-items:flex-end;margin-bottom:8px"><div><div class="muted">After '+yrs+' years</div><div class="big">'+fmt0(end)+'</div></div><div style="text-align:right"><div class="muted">You put in '+fmt0(put)+'</div><div class="muted">Growth '+fmt0(end-put)+'</div></div></div>'+dual(bal,con);
+ const base=fv(c.start,0,r,yrs);
+ h+='<div class="dh" style="margin-top:14px">The cost of waiting</div>';
+ [0,5,10].forEach(w=>{if(w>=yrs)return;const v=base+fv(0,c.mo,r,yrs-w);h+='<div class="row between" style="padding:6px 0;border-bottom:1px solid var(--g2)"><span>'+(w?'Start '+w+' years later':'Start now')+'</span><b>'+fmt0(v)+(w?' <span class="muted">('+sgn(v-end,0).replace(/^([+−])/,'$1$')+')</span>':'')+'</b></div>'});
+ h+='<div class="tiny" style="margin-top:8px">Assumes a steady '+group(r,2)+'% a year after fees. Real markets are bumpy and nothing is guaranteed. A 7% nominal return is a common planning figure; use 5% to be conservative.</div>';
+ return h;
+}
+
+function answer(id){
+ const t=totals(mkey(today())),base=t.base,st=steps(),cur=st[st.now]||st[st.length-1];
+ switch(id){
+  case 'next':return '<p><b>Your next dollar goes to: '+esc(cur.t)+'.</b></p><p>'+esc(cur.s)+'</p>'+(cur.n?'<p class="muted">'+esc(cur.n)+'</p>':'')+'<p>The order matters because each step removes a bigger risk or earns a bigger guaranteed return than the one after it.</p>';
+  case 'save':{
+   if(!(base>0))return '<p>Set your monthly take-home pay in Budget first, then I can put numbers on it.</p>';
+   return '<p>A solid default is <b>20% of take-home</b>, which is <b>'+fmt0(base*.2)+'</b> a month for you. This month you have saved '+fmt0(t.sv)+' ('+Math.round(t.sv/base*100)+'%).</p><p>If 20% is not realistic yet, start at 10% and raise it by 1% every time you get a raise or a new paycheck source. Automating the transfer beats willpower.</p>';}
+  case 'invest':{
+   return '<p>Common long-term guidance is to put about <b>15% of gross income</b> into retirement accounts over a career'+(base>0?', roughly '+fmt0(base*.15)+' a month on your pay':'')+'. Starting at 18 with even $100 a month does more than starting at 30 with $300, because of the extra years of compounding.</p><p>Do it in order: starter emergency fund, match, high-interest debt, then Roth IRA. Use the calculator below to see your own numbers.</p>';}
+  case 'over':return insights().map(s=>'<p>'+esc(s)+'</p>').join('');
+  case 'roth':return '<p><b>Roth</b> means you pay tax now and withdraw tax-free later. <b>Traditional</b> gives a deduction now and taxes withdrawals later.</p><p>If your income is low today and likely to rise (a student working part time, a young service member), a Roth usually wins, because you are paying tax at your lowest rate. If you are already in a high bracket, traditional can win. When unsure, a Roth is the safer default for a first account, and contributions (not earnings) can be withdrawn without penalty. The same Roth-or-traditional choice exists inside a 401(k) or the TSP.</p>';
+  case 'stock':return '<p>Honest answer: picking individual stocks is the <b>hardest</b> way to do this and the one most beginners start with.</p><ul><li>One company can fall 50% and never recover. A whole-market index fund can’t go to zero unless the whole economy does.</li><li>Professionals with research teams mostly fail to beat a plain index fund over long periods. What is your edge?</li><li>A headline is already priced in by the time you read it.</li></ul><p>A reasonable structure: put 90%+ in broad index funds, and if you want to learn on individual stocks, cap it at 5–10% as tuition money you can afford to lose. Use the Markets tab to track a stock for a few months and write down why you would buy before you do.</p>';
+  case 'index':return '<p>An <b>index fund</b> owns a slice of every company in an index (for example, the S&amp;P 500’s 500 large US companies). An <b>ETF</b> is the same idea that trades like a stock. You get instant diversification for a very low <b>expense ratio</b> (the yearly fee, often 0.03–0.10%).</p><p>A <b>target-date fund</b> goes one step further: it picks the mix for you and gets more conservative as your retirement year approaches. For a first account, one broad fund is plenty.</p>';
+  case 'debt':{
+   const d=S.set.debt,r=S.set.rate;
+   return '<p>Compare two numbers: the <b>interest rate on the debt</b> against the <b>return you can reasonably expect</b>. Paying off a 24% credit card is a guaranteed 24% return. Stocks have averaged roughly 7–10% a year with big swings.</p>'+(d>0?'<p>You entered '+fmt0(d)+' at '+r+'%. '+(r>=8?'That rate is above the line, so it comes before investing beyond a match.':'That rate is low enough that investing alongside it is reasonable.')+'</p>':'<p>Enter a balance and rate under "Your numbers" and I will tell you where it lands.</p>')+'<p>Rule of thumb: above about 8%, pay it down first. Below about 4%, invest. In between, split it.</p>';}
+  case 'credit':return '<p>Your score is mostly two things: <b>payment history (35%)</b> and <b>utilization (30%)</b>, how much of your limit you use.</p><ul><li>Open one no-annual-fee card, put one small recurring bill on it, and set autopay for the full statement balance.</li><li>Keep usage under 30% of the limit, under 10% is better.</li><li>Never carry a balance. Interest of 20%+ erases any rewards.</li><li>Length of history counts, so keep your oldest card open.</li></ul>';
+  case 'tax':return '<p>Three easy wins: file a return every year even with low income (you may get withholding back), claim <b>education credits</b> such as the American Opportunity Credit (up to $2,500 a year for eligible students), and use free filing options like IRS Free File before paying a preparer. Check current rules at irs.gov.</p>';
+ }
+ return '';
+}
+const ASKS=[['next','Where should my next dollar go?'],['save','How much should I save each month?'],['invest','How much should I invest?'],['over','Am I overspending?'],['roth','Roth or traditional?'],['stock','Should I buy individual stocks?'],['index','What is an index fund or ETF?'],['debt','Pay off debt or invest first?'],['credit','How do I build credit?'],['tax','Any easy tax wins for a student?']];
+
+function vAdv(){
+ const st=steps(),cur=st[st.now]||st[st.length-1],t=totals(mkey(today()));
+ let h='<div class="hl"><div class="muted">Your next dollar goes to</div><div class="mid" style="margin:4px 0 6px;font-size:22px">'+esc(cur.t)+'</div><div class="muted">'+esc(cur.n||cur.s)+'</div></div>';
+ h+='<h2>Your numbers</h2><div class="card"><div class="grid2">'
+  +'<div class="fld"><div class="muted">Age</div><input type="number" inputmode="numeric" data-p="age" value="'+(S.set.age||'')+'" placeholder="18"></div>'
+  +'<div class="fld"><div class="muted">Monthly essentials</div><input type="number" inputmode="decimal" data-p="ess" value="'+(S.set.ess||'')+'" placeholder="auto"></div>'
+  +'<div class="fld"><div class="muted">Debt balance</div><input type="number" inputmode="decimal" data-p="debt" value="'+(S.set.debt||'')+'" placeholder="0"></div>'
+  +'<div class="fld"><div class="muted">Debt APR %</div><input type="number" inputmode="decimal" data-p="rate" value="'+(S.set.rate||'')+'" placeholder="0"></div></div>'
+  +'<label class="sw" style="margin-bottom:10px"><span>I get my full employer / TSP match, or have none</span><input type="checkbox" data-p="match" '+(S.set.match?'checked':'')+'></label>'
+  +'<label class="sw"><span>I’m in the Guard or Reserve (TSP eligible)</span><input type="checkbox" data-p="guard" '+(S.set.guard?'checked':'')+'></label>'
+  +(S.set.guard?'<div class="tiny" style="margin-top:8px">Guard and Reserve members can use the Thrift Savings Plan, and many qualify for a government match under the Blended Retirement System after a service threshold. Confirm the details with your unit finance office or tsp.gov.</div>':'')+'</div>';
+ h+='<h2>The order of operations</h2><div class="card">';
+ st.forEach((x,i)=>{
+  const cls=x.done?'done':i===st.now?'now':'';
+  h+='<div class="step '+cls+'"><div class="n">'+(x.done?'✓':i+1)+'</div><div class="grow"><div class="st">'+esc(x.t)+'</div><div class="muted" style="margin-top:3px;line-height:1.45">'+esc(x.s)+'</div>'
+   +(x.pr!=null&&!x.done?'<div class="bar"><i style="width:'+Math.min(100,Math.max(0,x.pr*100))+'%"></i></div>':'')+(x.n?'<div class="tiny">'+esc(x.n)+'</div>':'')+'</div></div>';
+ });
+ h+='</div><div class="tiny" style="margin:-4px 4px 12px">This is the widely taught sequence, not personal advice. Your situation (an employer match, loan rates, income stability) can reorder it.</div>';
+ h+='<h2>Ask the assistant</h2><div class="card"><div class="ask">'+ASKS.map(a=>'<button class="'+(askId===a[0]?'on':'')+'" data-a="ask" data-v="'+a[0]+'">'+esc(a[1])+'</button>').join('')+'</div>'+(askId?'<div class="ans">'+answer(askId)+'</div>':'')+'</div>';
+ const c=S.calc;
+ h+='<h2>Growth calculator</h2><div class="card"><div class="grid2">'
+  +'<div class="fld"><div class="muted">Starting amount</div><input type="number" inputmode="decimal" data-k="start" value="'+c.start+'"></div>'
+  +'<div class="fld"><div class="muted">Per month</div><input type="number" inputmode="decimal" data-k="mo" value="'+c.mo+'"></div>'
+  +'<div class="fld"><div class="muted">Return % / year</div><input type="number" inputmode="decimal" data-k="r" value="'+c.r+'"></div>'
+  +'<div class="fld"><div class="muted">Fund fee %</div><input type="number" inputmode="decimal" data-k="fee" value="'+c.fee+'"></div></div>'
+  +'<div class="fld"><div class="muted">Years'+(S.set.age>0&&S.set.age<65?' (to age 65: '+(65-S.set.age)+')':'')+'</div><input type="number" inputmode="numeric" data-k="yrs" value="'+c.yrs+'"></div><div id="calcOut">'+calcHTML()+'</div></div>';
+ return h;
+}
+function advClick(a,v){
+ if(a==='ask'){askId=askId===v?null:v;render();return true}
+ return false;
+}
+/* ============ learn ============ */
+let openAcc={};
+const LEARN=[
+{g:'Start here',items:[
+ ['Pay yourself first','<p>Most people save what is left after spending, and nothing is ever left. Flip it: move money to savings and investing the day you are paid, then live on the rest.</p><ul><li>Pick a fixed percentage, even 5% to start.</li><li>Automate the transfer for the day after payday.</li><li>Raise the percentage whenever your income rises.</li></ul>'],
+ ['Pick a budgeting method','<ul><li><b>50/30/20:</b> 50% needs, 30% wants, 20% savings and debt payoff. Simple and a good default.</li><li><b>Zero-based:</b> give every dollar a job until income minus plans equals zero. Best when money is tight.</li><li><b>Pay-yourself-first:</b> automate savings, spend the rest freely. Best if you hate tracking.</li></ul><p>The best method is the one you will still use in March. Sterling’s Budget tab is built around 50/30/20 with editable limits.</p>'],
+ ['Track before you cut','<p>For two weeks, log everything. Most people find three leaks: <b>subscriptions</b> they forgot, <b>food delivery and eating out</b>, and <b>small impulse buys</b>. Cut the leaks, not the things you genuinely love, and you will keep the habit.</p>']
+]},
+{g:'Saving',items:[
+ ['Emergency fund','<p>Cash for the unexpected: a car repair, a lost shift, a flight home. Build it in two stages.</p><ul><li><b>Starter:</b> $1,000 as fast as you can.</li><li><b>Full:</b> 3 months of essentials with steady income, 6 months with irregular income.</li></ul><p>Keep it in a separate high-yield savings account so it is easy to reach but not easy to spend.</p>'],
+ ['High-yield savings accounts','<p>Online banks often pay several times the interest of a big bank’s regular savings account. Compare current APYs before you choose, and check the account is <b>FDIC insured</b> (up to $250,000 per depositor, per bank). Rates move, so a quick look every few months is worth it.</p>'],
+ ['CDs and Treasury bills','<p>Lock a rate for a fixed time for money you will not need soon. A CD has an early-withdrawal penalty. Treasury bills are backed by the US government and their interest is exempt from state income tax. Good for a goal with a known date, like tuition next fall.</p>']
+]},
+{g:'Investing',items:[
+ ['Compounding and the rule of 72','<p>Growth earns growth. The <b>rule of 72</b>: divide 72 by your annual return to estimate years to double. At 8%, money doubles about every 9 years.</p><p>Example: $100 a month at 7% for 40 years becomes roughly <b>$262,000</b>, but you only put in $48,000. The same $100 started 10 years later ends near $122,000. Time is the biggest lever you have, and you have more of it than almost anyone.</p>'],
+ ['Index funds and ETFs','<p>Instead of betting on one company, own thousands of them in one purchase. Index funds track a market (the S&amp;P 500, the total US market, the world). They are cheap, diversified, and over long periods have beaten most professionally managed funds.</p><p>Look for an <b>expense ratio</b> under about 0.10%. A 1% fee sounds tiny but can cost you a quarter or more of your final balance over decades.</p>'],
+ ['Roth IRA','<p>An individual retirement account you open yourself at a broker like Fidelity, Schwab or Vanguard. You contribute after-tax money, it grows tax-free, and qualified withdrawals in retirement are tax-free.</p><ul><li>You need earned income (a paycheck counts).</li><li>The yearly limit is about $7,500 for 2026. Check irs.gov, limits change.</li><li>Your contributions can be withdrawn without tax or penalty. Earnings cannot, before 59½, with some exceptions.</li><li><b>Opening it is not investing.</b> You must buy a fund inside it.</li></ul>'],
+ ['401(k), TSP and employer match','<p>A match is free money: if your employer matches 100% up to 5% of pay, contributing 5% gets an instant doubling. Always grab the full match first.</p><p><b>Guard and Reserve:</b> you can contribute to the Thrift Savings Plan (TSP), a low-cost 401(k)-style plan with a Roth option. Many members are covered by the Blended Retirement System, which includes a government match once you meet its service requirements. Details change, so confirm with your unit finance office or tsp.gov.</p>'],
+ ['Diversification and risk','<p>Do not put all your eggs in one basket. Stocks can fall 30–50% in a bad year and then recover, but only if you are not forced to sell. Rule of thumb: money you need within about 5 years does not belong in stocks. Money for decades from now can take the swings.</p><p>A common starting mix is mostly stock index funds with a bond or cash slice that grows as your goal date nears. A target-date fund does this automatically.</p>'],
+ ['Dollar-cost averaging','<p>Investing the same amount every month, no matter the price. Mathematically, investing a lump sum immediately wins more often than spreading it out, but for most people DCA is how real paychecks work anyway, and it removes the temptation to time the market. Start now, keep going, and turn off the notifications.</p>'],
+ ['Why picking stocks is hard','<p>Beating the market consistently is rare, even for professionals. If you want to hold individual stocks, treat it as a small side portfolio (5–10%) you can afford to lose. Write down why you are buying and what would make you sell, before you buy. A headline is already priced in by the time you read it.</p>'],
+ ['Fees and taxes','<p>Two quiet killers. <b>Fees:</b> expense ratios, trading commissions, and advisor fees compound against you. <b>Taxes:</b> gains on investments held over a year are usually taxed at a lower rate than short-term gains, and retirement accounts (Roth IRA, 401(k), TSP) shelter growth. Using the right account is a free boost.</p>']
+]},
+{g:'Credit and debt',items:[
+ ['Credit score basics','<p>FICO weighs: payment history 35%, how much of your limit you use 30%, length of history 15%, mix of accounts 10%, new applications 10%. Pay on time, keep usage low, keep old accounts open. A good score lowers rates on cars and homes by thousands.</p>'],
+ ['Credit cards without the trap','<p>Used well, a card is free rewards and fraud protection. Used badly, it is 20%+ interest. The rule: <b>only charge what you could pay in cash, and pay the full statement balance every month</b> with autopay. If you ever carry a balance, rewards no longer matter.</p>'],
+ ['Pay down debt: avalanche vs. snowball','<p><b>Avalanche:</b> pay minimums on everything, put extra on the highest-interest debt first. Cheapest. <b>Snowball:</b> extra on the smallest balance first. Slightly costlier, but the quick wins keep many people going. Pick the one you will finish.</p>'],
+ ['Student loans','<p>Borrow only what you need. Know your rate and whether it is fixed. Federal loans have protections private loans do not. Scholarships, grants, work programs and military education benefits reduce what you borrow, and every dollar not borrowed is a dollar not paying interest.</p>']
+]},
+{g:'Earning more',items:[
+ ['Raise your income','<p>Cutting expenses has a floor. Income does not. The highest-leverage moves: build skills employers pay more for, ask for raises with evidence, take on higher-paying hours, and add a second income stream that fits your schedule. For students, <b>scholarship applications</b> can pay far more per hour than a part-time job.</p>'],
+ ['Insurance basics','<p>Insurance is for losses you cannot afford. Keep health coverage, renters or auto insurance as needed, and consider higher deductibles once your emergency fund can cover them. Skip small add-on warranties.</p>'],
+ ['Taxes for students and young workers','<p>Fill out your W-4 so you do not over-withhold. File every year, even with low income. Look at education credits such as the American Opportunity Credit (up to $2,500 a year for eligible students) and free filing tools. Rules change yearly, so verify at irs.gov.</p>'],
+ ['Guard and Reserve money notes','<ul><li>Drill and active duty pay are taxable income and count as earned income for IRA contributions.</li><li>The TSP is open to you; ask about the match.</li><li>The Servicemembers Civil Relief Act can cap interest at 6% on debts taken before you entered active duty. Ask your legal assistance office.</li><li>State and federal education benefits can cut tuition. Ask your unit and school veteran services office early.</li></ul><p>Details depend on your status and state, so confirm with your finance office.</p>']
+]},
+{g:'Mistakes to avoid',items:[
+ ['The expensive seven','<ul><li><b>Lifestyle creep:</b> every raise becomes a bigger bill.</li><li><b>No emergency fund:</b> one surprise becomes debt.</li><li><b>Long car loans:</b> a 72-month loan on a depreciating car.</li><li><b>Investing while carrying 20%+ debt.</b></li><li><b>Timing the market:</b> selling in a panic and missing the recovery.</li><li><b>Checking your portfolio daily:</b> it only invites bad decisions.</li><li><b>Forgotten subscriptions:</b> $60 a month is $720 a year.</li></ul>']
+]}
+];
+const GLOSS=[
+ ['APR / APY','APR is the yearly interest rate on debt. APY is what a savings account actually pays after compounding.'],
+ ['ETF','A fund that holds many investments and trades on an exchange like a stock.'],
+ ['Index fund','A fund built to match a market index instead of trying to beat it.'],
+ ['Expense ratio','The yearly fee a fund charges, as a percentage of your money.'],
+ ['Dividend','A cash payment some companies make to shareholders from profits.'],
+ ['Bull / bear market','Bull: prices rising broadly. Bear: prices down about 20% or more from a recent high.'],
+ ['P/E ratio','Price divided by earnings per share. Higher can mean investors expect more growth, or that the stock is expensive.'],
+ ['Market cap','Share price times shares outstanding: the total value of a company.'],
+ ['Inflation','The rising cost of things over time. It shrinks cash that sits still.'],
+ ['Liquidity','How quickly you can turn something into cash without losing value.'],
+ ['Capital gain','Profit from selling an investment for more than you paid.'],
+ ['Rebalancing','Adjusting your holdings back to your target mix once a year or so.']
+];
+function vLearn(){
+ let h='<div class="hl"><div class="muted">The money maximizer</div><div class="mid" style="font-size:20px;margin:4px 0 8px">Ten moves in the right order</div><div class="muted" style="line-height:1.55">1. Track spending for two weeks.<br>2. Build a $1,000 starter fund.<br>3. Capture any employer or TSP match.<br>4. Kill debt above ~8% APR.<br>5. Open a Roth IRA and invest in a broad index fund.<br>6. Automate everything on payday.<br>7. Grow the emergency fund to 3–6 months.<br>8. Raise your income and your savings rate together.<br>9. Max tax-advantaged accounts.<br>10. Leave it alone and let time work.</div><button class="full" data-a="tab" data-v="adv" style="margin-top:12px;background:#000;color:#fff">See where you are</button></div>';
+ LEARN.forEach((g,gi)=>{
+  h+='<h2>'+g.g+'</h2><div class="card">'+g.items.map((it,i)=>{const k=gi+'-'+i,o=openAcc[k];return '<div class="acc"><div class="ah" data-a="open" data-v="'+k+'"><span>'+esc(it[0])+'</span><span class="pl">'+(o?'−':'+')+'</span></div>'+(o?'<div class="ab">'+it[1]+'</div>':'')+'</div>'}).join('')+'</div>';
+ });
+ h+='<h2>Glossary</h2><div class="card">'+GLOSS.map((g,i)=>{const k='g-'+i,o=openAcc[k];return '<div class="acc"><div class="ah" data-a="open" data-v="'+k+'"><span>'+esc(g[0])+'</span><span class="pl">'+(o?'−':'+')+'</span></div>'+(o?'<div class="ab">'+esc(g[1])+'</div>':'')+'</div>'}).join('')+'</div>';
+ h+='<div class="tiny" style="margin:0 4px">Educational content, not personalized financial, tax or legal advice. Limits, rates and rules change, so verify with the IRS, your plan administrator or a licensed professional before acting.</div>';
+ return h;
+}
+function learnClick(a,v){
+ if(a==='open'){openAcc[v]=!openAcc[v];const y=window.scrollY;render();window.scrollTo(0,y);return true}
+ return false;
+}
+/* ============ settings ============ */
+function vSet(){
+ return '<h2>Profile</h2><div class="card"><div class="fld"><div class="muted">Your name</div><input type="text" maxlength="16" data-c="name" value="'+esc(S.set.name)+'" placeholder="Shown on Home"></div><div class="fld" style="margin-bottom:0"><div class="muted">Monthly take-home pay</div><input type="number" inputmode="decimal" data-c="income" value="'+(S.set.income||'')+'" placeholder="e.g. 1800"></div><div class="tiny" style="margin-top:8px">Used for your daily allowance and savings rate. To refill every budget limit from it, use "Reset limits" in Budget.</div></div>'
+ +'<h2>Launch</h2><div class="card"><label class="sw"><span>Show a money quote when the app opens</span><input type="checkbox" data-c="quotes" '+(S.set.quotes?'checked':'')+'></label></div>'
+ +'<h2>Backup</h2><div class="card"><div class="tiny" style="margin-bottom:8px">Everything is stored on this device only. Export your data as text to keep a copy or move it to a new phone, and paste it back here to restore.</div><textarea id="bk" spellcheck="false" placeholder="Export fills this box. Paste a backup here to import."></textarea><div class="row" style="margin-top:8px"><button class="ghost grow" data-a="bkx">Export</button><button class="ghost grow" data-a="bki">Import</button></div></div>'
+ +'<h2>Data</h2><div class="card"><button class="ghost full" data-a="reset">'+(delArm==='reset'?'Tap again to erase everything':'Reset all data')+'</button></div>'
+ +'<div class="tiny" style="margin:0 4px">Sterling is a planning and learning tool. Market data comes from public sources and may be delayed or wrong. Nothing here is financial advice.</div>';
+}
+
+/* ============ nav + render ============ */
+let tab='home';
+const ICON={
+ home:'<path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/>',
+ bud:'<rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18M16 15h2"/>',
+ mkt:'<path d="M3 17l6-6 4 4 8-9M15 6h6v6"/>',
+ adv:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+ learn:'<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 19a2 2 0 012-2h13"/>',
+ set:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'
+};
+function renderNav(){
+ const tabs=[['home','Home'],['bud','Budget'],['mkt','Markets'],['adv','Advisor'],['learn','Learn'],['set','Settings']];
+ $('#nav').innerHTML=tabs.map(t=>'<button data-a="tab" data-v="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+ICON[t[0]]+'</svg>'+t[1]+'</button>').join('');
+}
+function render(){
+ const m={home:vHome,bud:vBudget,mkt:vMkt,adv:vAdv,learn:vLearn,set:vSet};
+ const y=window.scrollY;$('#app').innerHTML=m[tab]();window.scrollTo(0,y);renderNav();
+}
+function needRefresh(){const last=Math.max.apply(null,[0].concat(Object.keys(S.qd).map(k=>S.qd[k].ts||0)));return Date.now()-last>3e5}
+
+/* ============ events ============ */
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-a]');if(!b)return;
+ const a=b.dataset.a,v=b.dataset.v;
+ if(a==='tab'){if(tab===v&&v==='mkt')sel=null;tab=v;window.scrollTo(0,0);render();if(v==='mkt'||v==='home'){if(live===null||needRefresh())refreshAll()}return}
+ if(budgetClick(a,v,b)||marketClick(a,v,b)||advClick(a,v)||learnClick(a,v))return;
+ if(a==='bkx'){
+  const o=JSON.stringify({set:S.set,tx:S.tx,cats:S.cats,goals:S.goals,watch:S.watch,hold:S.hold,calc:S.calc});
+  const t=$('#bk');t.value=o;t.select();
+  try{navigator.clipboard.writeText(o).then(()=>toast('Copied to clipboard'),()=>toast('Select and copy the text'))}catch(x){toast('Select and copy the text')}
+ }else if(a==='bki'){
+  try{const j=JSON.parse($('#bk').value);if(!j||!Array.isArray(j.cats)||!Array.isArray(j.tx))throw 0;const f=fresh();S=Object.assign(f,j);S.set=Object.assign(fresh().set,j.set);S.calc=Object.assign(fresh().calc,j.calc);S.qd={};S.news={};save();render();toast('Backup restored')}catch(x){toast('That does not look like a Sterling backup')}
+ }else if(a==='reset'){
+  armed('reset',()=>{try{localStorage.removeItem(KEY)}catch(x){}S=fresh();save();tab='home';mo=mkey(today());render();toast('All data erased')});
+ }
+});
+document.addEventListener('change',e=>{
+ const t=e.target,d=t.dataset;if(!d)return;
+ if(d.c){
+  if(d.c==='quotes')S.set.quotes=t.checked;
+  else if(d.c==='income')S.set.income=Math.max(0,num(t.value));
+  else S.set[d.c]=t.value.trim();
+  save();
+ }else if(d.p){
+  if(t.type==='checkbox')S.set[d.p]=t.checked;else S.set[d.p]=Math.max(0,num(t.value));
+  save();render();
+ }
+});
+document.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.dataset&&t.dataset.k){S.calc[t.dataset.k]=num(t.value);save();const o=$('#calcOut');if(o)o.innerHTML=calcHTML()}
+});
+
+/* ============ boot ============ */
+splash();render();refreshAll();
+</script>
+</body>
+</html>
